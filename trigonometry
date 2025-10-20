@@ -1,6 +1,6 @@
 import math
 print("Тригонометрический калькулятор")
-print("Выберите тригонометрическую функцию: sin, cos, tg, ctg")
+print("Выберите тригонометрическую функцию: sin, cos, tg, ctg, sec, cosec")
 func = input("Введите функцию: ")
 
 angle = float(input("Введите угол в градусах: "))
@@ -14,6 +14,10 @@ elif func == "tg":
     result = math.tan(radians)
 elif func == "ctg":
     result = 1 / math.tan(radians)
+elif func == "sec":
+    result = 1 / math.cos(radians)
+elif func == "cosec":
+    result = 1 / math.sin(radians)
 else:
     result = "Неизвестная функция"
 
