@@ -1,0 +1,24 @@
+import math
+
+def supplementary(value: float) -> float:
+    return 180.0 - value
+
+def main():
+    try:
+        val = float(input("Введите значение в градусах : ").strip())
+    except ValueError:
+        print("Неверный ввод: введите число, например 45.0")
+        return
+    
+    kind = input("Это заданный угол (введите 'a') или задан смежный угол (введите 's')? ").strip().lower()
+
+    if kind == 'a':
+        adj = supplementary(val)
+        print(f"Смежный угол для {val:.2f}° равен {adj:.2f}°")
+    elif kind == 's':
+        other = supplementary(val)
+        print(f"Другой угол (смежный) для {val:.2f}° равен {other:.2f}°")
+    else:
+        print("Неверный выбор. Введите 'a' или 's'.")
+if __name__ == "__main__":
+    main()
