@@ -1,0 +1,87 @@
+# ...existing code...
+import math
+import csv
+
+def format_val(v):
+    return f"{v:.6g}"
+
+def compute_row(x, bases):
+    row = {"x": format_val(x)}
+    for b in bases:
+        if x <= 0:
+            row[b['label']] = "—"
+            continue
+        try:
+            if b['type'] == 'ln':
+                val = math.log(x)
+            else:
+                val = math.log(x, b['base'])
+            row[b['label']] = format_val(val)
+        except Exception:
+            row[b['label']] = "err"
+    return row
+
+def parse_bases(s):
+    tokens = [t.strip().lower() for t in s.split() if t.strip()]
+    bases = []
+    for t in tokens:
+        if t in ('ln', 'e'):
+            bases.append({'type': 'ln', 'label': 'ln(x)'})
+        else:
+            try:
+                base = float(t)
+                if base <= 0 or base == 1:
+                    continue
+                label = f"log{int(base) if base.is_integer() else base}(x)"
+                bases.append({'type': 'base', 'base': base, 'label': label})
+            except ValueError:
+                continue
+    return bases
+
+def main():
+    try:
+        start = float(input("start (например 0.1): ").strip())
+        end = float(input("end (например 10): ").strip())
+        step = float(input("step (например 0.5): ").strip())
+    except ValueError:
+        print("Неверный ввод чисел.")
+        return
+
+    bases_input = input("Укажите базы через пробел (пример: ln 10 2 3): ").strip()
+    bases = parse_bases(bases_input)
+    if not bases:
+        # дефолтные базы
+        bases = [{'type': 'ln', 'label': 'ln(x)'},
+                 {'type': 'base', 'base': 10.0, 'label': 'log10(x)'},
+                 {'type': 'base', 'base': 2.0, 'label': 'log2(x)'}]
+
+    # заголовок
+    headers = ["x"] + [b['label'] for b in bases]
+    print(" | ".join(f"{h:>12}" for h in headers))
+    print("-" * (15 * len(headers)))
+
+    rows = []
+    x = start
+    # убираем плавающие неточности: цикл пока x <= end + 1e-12
+    while x <= end + 1e-12:
+        row = compute_row(x, bases)
+        rows.append(row)
+        print(" | ".join(f"{row.get(h, ''):>12}" for h in headers))
+        x += step
+
+    save = input("Сохранить в CSV? (y/n): ").strip().lower()
+    if save == 'y':
+        fname = input("Имя файла (по умолчанию logs.csv): ").strip() or "logs.csv"
+        try:
+            with open(fname, "w", newline="", encoding="utf-8") as f:
+                writer = csv.DictWriter(f, fieldnames=headers)
+                writer.writeheader()
+                for r in rows:
+                    writer.writerow(r)
+            print("Сохранено в", fname)
+        except Exception as e:
+            print("Ошибка при сохранении:", e)
+
+if __name__ == "__main__":
+    main()
+# ...existing code...
