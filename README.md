@@ -1,1 +1,1 @@
-# friendly-eureka
+# school_exams
